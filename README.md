@@ -2,7 +2,7 @@
  Digital Innovation One
 
  # Sistema Bancário em Python
-Neste desafio será seguido um modelo de classes UML, que é uma modelo visual que auxilia na modelagem orientada a objetos (POO).
+Neste desafio foi seguido um modelo de classes UML, que é uma modelo visual que auxilia na modelagem orientada a objetos (POO).
 
 - A Programação Orientada a Objetos (POO) é um paradigma de programação que organiza o código em torno de objetos. Um objeto é uma entidade que pode ser usada para armazenar 
 dados e realizar operações. Os objetos são criados a partir de classes, que são modelos que definem os atributos e métodos de um objeto.
