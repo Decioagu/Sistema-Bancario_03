@@ -16,10 +16,10 @@ class Cliente: # Classe principal
         self.contas = []
 
     def realizar_transacao(self, conta, transacao):
-        transacao.registrar(conta)
+        transacao.registrar(conta) # retorno método das "class Saque" ou "class Deposito"
 
     def adicionar_conta(self, conta):
-        self.contas.append(conta)
+        self.contas.append(conta) # adicionar lista self.contas
 
 # Cadastramento de Clientes
 class PessoaFisica(Cliente): # Classe filha
@@ -39,8 +39,8 @@ class Conta: # Classe principal
         self._historico = Historico() # retorno classe
 
     @classmethod
-    def nova_conta(cls, cliente, numero):
-        return cls(numero, cliente)
+    def nova_conta(cls, cliente, numero): 
+        return cls(numero, cliente) # modifica atributos da própria classe
 
     @property
     def saldo(self):
@@ -62,6 +62,7 @@ class Conta: # Classe principal
     def historico(self):
         return self._historico
 
+    # subtrai valor do self.saldo
     def sacar(self, valor):
         saldo = self.saldo
         excedeu_saldo = valor > saldo
@@ -79,6 +80,7 @@ class Conta: # Classe principal
 
         return False
 
+    # incrementa valor no self.saldo
     def depositar(self, valor):
         if valor > 0:
             self._saldo += valor
