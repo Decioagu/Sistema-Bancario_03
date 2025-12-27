@@ -20,3 +20,67 @@ dados e realizar operações. Os objetos são criados a partir de classes, que s
 
 Digital Innovation One
 
+````
+  ==========================================
+
+
+        ================ MENU ================
+        [1] DEPOSITAR
+        [2] SACAR
+        [3] EXTRATO
+        [4] CADASTRO CLIENTE
+        [5] LISTAR CLIENTES
+        [6] ABRIR CONTA
+        [7] LISTAR CONTAS
+        [8] SAIR
+
+Escolha uma opção:5
+============================================================
+
+CPF: A
+Nome: A
+Data Nascimento: A
+Endereço: A
+Contas:
+            Agência:    0001
+            C/C:                1
+            Titular:    A
+            Saldo:              R$ 0.00
+
+            Agência:    0001
+            C/C:                2
+            Titular:    A
+            Saldo:              R$ 99.00
+
+
+
+CPF: B
+Nome: B
+Data Nascimento: B
+Endereço: B
+Contas:
+            Agência:    0001
+            C/C:                3
+            Titular:    B
+            Saldo:              R$ 0.00
+
+
+
+CPF: C
+Nome: C
+Data Nascimento: C
+Endereço: C
+Contas:
+            Agência:    0001
+            C/C:                4
+            Titular:    C
+            Saldo:              R$ 0.00
+
+            Agência:    0001
+            C/C:                5
+            Titular:    C
+            Saldo:              R$ 0.00
+````
+
+
+

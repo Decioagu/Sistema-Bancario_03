@@ -21,6 +21,7 @@ class Cliente: # Classe principal
     def adicionar_conta(self, conta):
         self.contas.append(conta) # adicionar lista self.contas
 
+
 # Cadastramento de Clientes
 class PessoaFisica(Cliente): # Classe filha
     def __init__(self, nome, data_nascimento, cpf, endereco):
@@ -29,26 +30,38 @@ class PessoaFisica(Cliente): # Classe filha
         self.data_nascimento = data_nascimento
         self.cpf = cpf
 
+    def __str__(self):
+        # print da class Conta
+        contas_str = "\n".join(str(conta) for conta in self.contas)
+
+        return (
+            f"\nCPF: {self.cpf}\n"
+            f"Nome: {self.nome}\n"
+            f"Data Nascimento: {self.data_nascimento}\n"
+            f"Endereço: {self.endereco}\n"
+            f"Contas: \n{contas_str}\n"
+        )
+
 # HERANÇA SIMPLES
 class Conta: # Classe principal
     def __init__(self, numero, cliente):
         self._saldo = 0
-        self._numero = numero
+        self._numero_da_conta = numero
         self._agencia = "0001"
         self._cliente = cliente
         self._historico = Historico() # retorno classe
 
-    @classmethod
+    @classmethod # modifica atributos da própria classe
     def nova_conta(cls, cliente, numero): 
-        return cls(numero, cliente) # modifica atributos da própria classe
+        return cls(numero, cliente) 
 
-    @property
+    @property # leitura de atributos
     def saldo(self):
         return self._saldo
 
     @property
     def numero(self):
-        return self._numero
+        return self._numero_da_conta
 
     @property
     def agencia(self):
@@ -93,18 +106,18 @@ class Conta: # Classe principal
 
 
 class ContaCorrente(Conta): # Classe filha
-    def __init__(self, numero, cliente, limite=500, limite_saques=3):
-        super().__init__(numero, cliente)
+    def __init__(self, numero_da_conta, cliente, limite=500, limite_saques=3):
+        super().__init__(numero_da_conta, cliente)
         self._limite = limite
         self._limite_saques = limite_saques
 
     def sacar(self, valor):
-        numero_saques = len(
+        numero_da_conta_saques = len(
             [transacao for transacao in self.historico.transacoes if transacao["tipo"] == Saque.__name__]
         )
 
         excedeu_limite = valor > self._limite
-        excedeu_saques = numero_saques >= self._limite_saques
+        excedeu_saques = numero_da_conta_saques >= self._limite_saques
 
         if excedeu_limite:
             print("\nOperação falhou! O valor do saque excede o limite.")
@@ -120,8 +133,9 @@ class ContaCorrente(Conta): # Classe filha
     def __str__(self):
         return f"""\
             Agência:\t{self.agencia}
-            C/C:\t\t{self.numero}
+            C/C:\t\t{self._numero_da_conta}
             Titular:\t{self.cliente.nome}
+            Saldo:\t\tR$ {self.saldo:.2f}
         """
 
 
@@ -189,19 +203,31 @@ def filtrar_cliente(cpf, clientes):
     clientes_filtrados = [cliente for cliente in clientes if cliente.cpf == cpf]
     return clientes_filtrados[0] if clientes_filtrados else None
 
+def filtrar_conta(conta, clientes):
+
+    for cliente in clientes:
+        for conta_cliente in cliente.contas:
+            if conta_cliente == conta:
+                return conta_cliente
+        
+    return None
 
 def recuperar_conta_cliente(cliente):
-    print('recuperar_conta_cliente', cliente.contas)
     if not cliente.contas:
         print("\nCliente não possui conta!")
         return
+    
+    # permite cliente escolher a conta
+    numero_conta = int(input("Informe o número da conta: "))
+    for conta in cliente.contas:
+        if conta.numero == numero_conta:
+            return conta
 
-    # não permite cliente escolher a conta
-    return cliente.contas[0]
+    return None
 
 # -------------------------------------- FUNÇÕES DE EXECUÇÃO --------------------------------------
 
-
+# Opeção 1
 def depositar(clientes):
     cpf = input("Informe o CPF do cliente: ")
     cliente = filtrar_cliente(cpf, clientes)
@@ -209,17 +235,19 @@ def depositar(clientes):
     if not cliente:
         print("\nCliente não encontrado!")
         return
+    
+    # permite cliente escolher a conta
+    conta = recuperar_conta_cliente(cliente)
+    if not conta:
+        print("\nConta não encontrada!")
+        return
 
     valor = float(input("Informe o valor do depósito: "))
     transacao = Deposito(valor) # retorno classe
 
-    conta = recuperar_conta_cliente(cliente)
-    if not conta:
-        return
-
     cliente.realizar_transacao(conta, transacao)
 
-
+# Opção 2
 def sacar(clientes):
     cpf = input("Informe o CPF do cliente: ")
     cliente = filtrar_cliente(cpf, clientes)
@@ -227,17 +255,19 @@ def sacar(clientes):
     if not cliente:
         print("\nCliente não encontrado!")
         return
+    
+    # permite cliente escolher a conta
+    conta = recuperar_conta_cliente(cliente)
+    if not conta:
+        print("\nConta não encontrada!")
+        return
 
     valor = float(input("Informe o valor do saque: "))
     transacao = Saque(valor) # retorno classe
 
-    conta = recuperar_conta_cliente(cliente)
-    if not conta:
-        return
-
     cliente.realizar_transacao(conta, transacao)
 
-
+# Opção 3
 def exibir_extrato(clientes):
     cpf = input("Informe o CPF do cliente: ")
     cliente = filtrar_cliente(cpf, clientes)
@@ -248,6 +278,7 @@ def exibir_extrato(clientes):
 
     conta = recuperar_conta_cliente(cliente)
     if not conta:
+        print("\nConta não encontrada!")
         return
 
     print("\n================ EXTRATO ================")
@@ -264,7 +295,7 @@ def exibir_extrato(clientes):
     print(f"\nSaldo:\n\tR$ {conta.saldo:.2f}")
     print("==========================================")
 
-
+# Opção 4
 def criar_cliente(clientes):
     cpf = input("Informe o CPF (somente número): ")
     cliente = filtrar_cliente(cpf, clientes)
@@ -284,7 +315,15 @@ def criar_cliente(clientes):
 
     print("\n=== Cliente criado com sucesso! ===")
 
+# Opção 5
+def listar_clientes(clientes):
+    if clientes:
+        for cliente in clientes:
+            print(textwrap.dedent(str(cliente))) # print da class Cliente
+    else:
+       print('\n Não foi encontrado nenhum cliente cadastrada!')
 
+# Opção 6
 def criar_conta(numero_conta, clientes, contas):
     cpf = input("Informe o CPF do cliente: ")
     cliente = filtrar_cliente(cpf, clientes)
@@ -300,17 +339,18 @@ def criar_conta(numero_conta, clientes, contas):
 
     print("\nConta criada com sucesso!")
 
-
+# Opção 7
 def listar_contas(contas):
     if contas:
         for conta in contas:
-            print(textwrap.dedent(str(conta)))
+            print(textwrap.dedent(str(conta))) # print da class Conta
     else:
        print('\n Não foi encontrado nenhum conta cadastrada!')
 
 # ----------------------------------- CORPO PRINCIPAL --------------------------------------
 
 def main():
+    # uso de lista é para listar os clientes e contas em opções 5 e 7
     clientes = []
     contas = []
 
@@ -321,9 +361,10 @@ def main():
         [2] SACAR
         [3] EXTRATO
         [4] CADASTRO CLIENTE
-        [5] ABRIR CONTA
-        [6] LISTAR CONTAS
-        [7] SAIR
+        [5] LISTAR CLIENTES
+        [6] ABRIR CONTA
+        [7] LISTAR CONTAS
+        [8] SAIR
         """
         # exibir "menu de opções"
         print(menu)
@@ -336,24 +377,34 @@ def main():
         # MENU = [1] DEPOSITAR
         if opcao == "1":
             depositar(clientes)
+
         # MENU = [2] SACAR
         elif opcao == "2":
             sacar(clientes)
+
         # MENU = [3] EXTRATO
         elif opcao == "3":
             exibir_extrato(clientes)
+
         # MENU = [4] CADASTRO CLIENTE
         elif opcao == "4":
             criar_cliente(clientes)
-        # MENU = [6] ABRIR CONTA
+
+        # MENU = [5] LISTAR CLIENTES
         elif opcao == "5":
+            listar_clientes(clientes)
+
+        # MENU = [6] ABRIR CONTA
+        elif opcao == "6":
             numero_conta = len(contas) + 1
             criar_conta(numero_conta, clientes, contas)
-        # MENU = [5] LISTAR CONTAS
-        elif opcao == "6":
-            listar_contas(contas)
-        # MENU = [7] SAIR
+
+        # MENU = [7] LISTAR CONTAS
         elif opcao == "7":
+            listar_contas(contas)
+
+        # MENU = [8] SAIR
+        elif opcao == "8":
             break
 
         else:
